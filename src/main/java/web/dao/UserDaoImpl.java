@@ -7,6 +7,7 @@ import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -23,7 +24,8 @@ public class UserDaoImpl implements UserDao {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
         Root<User> rootEntry = cq.from(User.class);
-        return entityManager.createQuery(cq.select(rootEntry)).getResultList();
+        TypedQuery<User> allQuery = entityManager.createQuery(cq.select(rootEntry));
+        return allQuery.getResultList();
     }
 
     @Override
