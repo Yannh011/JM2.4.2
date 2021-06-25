@@ -7,7 +7,6 @@ import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -24,9 +23,7 @@ public class UserDaoImpl implements UserDao {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
         Root<User> rootEntry = cq.from(User.class);
-        CriteriaQuery<User> all = cq.select(rootEntry);
-        TypedQuery<User> allQuery = entityManager.createQuery(all);
-        return allQuery.getResultList();
+        return entityManager.createQuery(cq.select(rootEntry)).getResultList();
     }
 
     @Override
@@ -57,10 +54,6 @@ public class UserDaoImpl implements UserDao {
     public UserDaoImpl() {
         super();
     }
-
-//    public static NoOpPasswordEncoder passwordEncoder() {
-//        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
-//    }
 
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
