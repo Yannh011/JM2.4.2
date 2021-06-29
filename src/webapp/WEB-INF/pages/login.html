@@ -8,6 +8,7 @@
 <body>
 <div>
     <h2>Login</h2>
+    <div class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
     <form method="post" action="/login">
         <label>Name </label>
         <input name="j_username"/>

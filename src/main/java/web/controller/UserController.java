@@ -26,6 +26,13 @@ public class UserController {
         return "login";
     }
 
+    @GetMapping("/login-error")
+    public String login(Model model) {
+        String errorMessage = "Incorrect name or email";
+        model.addAttribute("errorMessage", errorMessage);
+        return "login";
+    }
+
     @GetMapping("/admin")
     public String showAdminPage(Model model) {
         model.addAttribute("users", userService.getAllUsers());
