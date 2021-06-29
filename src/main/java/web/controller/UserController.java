@@ -2,6 +2,7 @@ package web.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/user")
+    @PreAuthorize("hasAuthority('USER')")
     public ModelAndView showUser() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ModelAndView modelAndView = new ModelAndView();
@@ -41,14 +43,14 @@ public class UserController {
     }
 
     @GetMapping("/addNewUser")
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String adduser(Model model) {
         model.addAttribute("user", new User());
         return "/adduser";
     }
 
     @PostMapping("/adduser")
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String saveUser(@RequestParam("name") String name,
                            @RequestParam("lastname") String lastname,
                            @RequestParam("email") String email,
@@ -74,7 +76,7 @@ public class UserController {
     }
 
     @GetMapping("/edit/{id}")
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
 //        User user = userService.getById(id);
         model.addAttribute("user", userService.getById(id));//user);
@@ -82,6 +84,7 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String updateUser(@ModelAttribute("user") User user,
                              @PathVariable("id") long id,
                              @RequestParam(required = false, name = "ADMIN") String ADMIN,
@@ -103,6 +106,7 @@ public class UserController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String deleteUser(@PathVariable("id") long id, Model model) {
         userService.delete(userService.getById(id));
         model.addAttribute("users", userService.getAllUsers());

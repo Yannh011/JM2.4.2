@@ -6,12 +6,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import web.config.handler.LoginSuccessHandler;
@@ -20,11 +20,16 @@ import web.config.handler.LoginSuccessHandler;
 @Configuration
 @EnableWebSecurity
 @ComponentScan("web")
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     //
+    private final UserDetailsService userDetailsService;
+
     @Autowired
-    private UserDetailsService userDetailsService;
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
 
     @Override
@@ -56,29 +61,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // делаем страницу регистрации недоступной для авторизированных пользователей
                 .authorizeRequests()
                 //страницы аутентификаци доступна всем
-                .antMatchers("/login").anonymous()
-                // защищенные URL
-//                .antMatchers("/").access("hasAnyRole('ADMIN')")
-                //.antMatchers(HttpMethod.GET, "/adduser").hasRole("ADMIN")
-                //.antMatchers(HttpMethod.GET, "/edit/{id}").hasRole("ADMIN")
-                //.antMatchers(HttpMethod.GET, "/delete/{id}").hasRole("ADMIN")
-                //.antMatchers(HttpMethod.GET, "/user").hasAnyRole("ADMIN,"USER")
-                //сделать доступ у остальным страницам
-                //do html page for user
-                .antMatchers("/user").hasAnyAuthority("USER", "ADMIN")
-                //.antMatchers("/index").hasAuthority("ADMIN")
-                .antMatchers("/adduser").hasAuthority("ADMIN")
-                .antMatchers("/update-user").hasAuthority("ADMIN")
-                .antMatchers("/admin").hasAuthority("ADMIN")
-
-//                .antMatchers( "/user").access("hasAnyRole('ADMIN','USER')")
-//
-        ;
-
+                .antMatchers("/login").anonymous();
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    public void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authenticationProvider());
     }
 
@@ -90,15 +77,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return authProvider;
     }
 
-
-    //    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder(12);
-//    }
-//    @Bean
-//    public static NoOpPasswordEncoder passwordEncoder() {
-//        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
-//    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
